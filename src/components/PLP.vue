@@ -15,9 +15,14 @@
       <a href="#">BLOG</a>
     </div>
   </div>
-  <div class="line"></div>
+  <div class="line top_line"></div>
   <!-- TOP NAVBAR -->
   <div class="navbar">
+    <div class="toggle_navbar laptop_view">
+      <img src="./assets/images/toggle.svg" alt="" class="side_menu">
+      <img src="./assets/images/smallLogo.png" alt="" class="logo_tablet">
+
+    </div>
     <a href="#" class="mobile_view"
       >WOMEN
       <img
@@ -49,7 +54,6 @@
       alt="image not found"
       class="mobile_view"
     />
-    <!-- <img src="./assets/images/smallLogo.png" alt="" class="laptop_view"> -->
     <a href="#" class="mobile_view"
       >OUR STORY
       <img
@@ -76,6 +80,37 @@
     <p class="count_header">{{ product_count }} Items</p>
   </div>
   <!-- Filter and sort -->
+  <div class="tab_filters">
+    <div class="tab_sort">
+      <button @click="showMobileSortOption()" class="action-button">
+        <img class="action-image" src="./assets/images/sort.svg" alt="">
+      <p>Sort By</p>
+      </button>
+    </div>
+    <div class="tab_filter">
+      <button  class="action-button">
+        <img class="action-image" src="./assets/images/filter-mobile.svg" alt="">
+      <p>Filters</p>
+      </button>
+    </div>
+  </div>
+<!-- sort options in mobile view -->
+<div id="sortListMobile" style="display: none;">
+  <div class="option container">
+         <div class="sorting-value" @click="showMobileSortOption()">
+
+          <ul class="sorting_list">
+            <h3>SORT BY</h3>
+            <li><button value="price_low" @click="sortBy($event)">Price (Low to High) </button></li>
+            <li><button value="selling_price" @click="sortBy($event)">Price (High to Low)</button></li>
+            <li><button value="discount" @click="sortBy($event)">Discount</button></li>
+            <li><button value="product_position" @click="sortBy($event)">Newest</button></li>
+          </ul>
+
+         </div>
+  </div>
+</div>
+
   <div class="filter_sort">
     <div class="applied_filter_list">
       <button class="hide_button" @click="hideFilter()">
@@ -119,7 +154,58 @@
 
   <!-- lower body -->
   <div class="filters_products">
+    <!-- Filters for mobile view -->
+    <div class="mobile_view_filters">
+      <div>
+        <ul class="filter_header">
+          <li
+            v-for="(filter, index) in filter_list"
+            :key="index"
+            class="filterList"
+          >
+            <div
+              class="name_img"
+              @click="filterClose(index), choosePlusMinus(index)"
+            >
+              <h6 class="filter_lable">{{ filter.filter_lable }}</h6>
+              <img
+                src="./assets/images/plus.png"
+                alt=""
+                :id="'plus' + index"
+                class="plus"
+              />
+              <img
+                src="./assets/images/minus-sign.png"
+                alt=""
+                :id="'minus' + index"
+                class="minus"
+              />
+            </div>
+            <ul :id="index" class="inActive">
+              <li
+                v-for="(options, id_filter) in filter.options"
+                :key="id_filter"
+                class="secondList"
+              >
+                <input
+                  type="checkbox"
+                  class="input-check"
+                  :id="'checkB' + options.value"
+                  name="checkB"
+                  @click="apply_filter(options.code, options.value)"
+                />
+                {{ options.value }}
+              </li>
+            </ul>
+            <hr />
+          </li>
+        </ul>
+      </div>
+    </div>
+    
     <!-- accordion -->
+
+
 
     <div class="col-3" id="accordion">
       <div>
@@ -189,7 +275,7 @@
   <!-- footer -->
   <div class="footer-logo">
     <img src="./assets/images/Group197.svg" alt="" id="line-footer" />
-    <img src="./assets/images/Group195.svg" alt="" />
+    <img src="./assets/images/Group195.svg" alt=""  class="footer-logo-img"/>
     <img src="./assets/images/Group197.svg" alt="" id="line-footer" />
   </div>
 
@@ -197,7 +283,7 @@
     <div class="footer_box">
       <div class="footer-inner">
         <div class="info custom-menu">
-          <h3 class="label">SHOP</h3>
+          <h3 class="label" >SHOP</h3>
           <div class="mobile-view">
             <ul>
               <li><a href="#" class="">Men</a></li>
@@ -274,7 +360,6 @@ export default {
   name: "PLP",
   data() {
     return {
-      isOpen: false,
       page: 1,
       count: 20,
       product_list: [],
@@ -289,6 +374,7 @@ export default {
       checkFilter: true,
       sort_by: "",
       sort_dir: "desc",
+      isShowMobileOption: false,
     };
   },
   mixins: [apiCall],
@@ -304,6 +390,18 @@ export default {
     });
   },
   methods: {
+    showMobileSortOption(){
+      let val= document.getElementById("sortListMobile")
+var styleOfEle = val.style["display"]
+console.log(styleOfEle);
+      if(styleOfEle=="contents"){
+        val.style["display"]="none"
+      }
+      else if(styleOfEle=="none"){
+        val.style["display"]="contents"
+      }
+      console.log(styleOfEle);
+    },
     sortBy(e) {
       let eVal = e.target.value;
       if (eVal == "price_low") {
@@ -437,7 +535,7 @@ export default {
     },
     autoscroll() {
       let posPos = document.getElementById("pos").offsetTop;
-      if (posPos - window.scrollY < 800) {
+      if (posPos - window.scrollY < 950) {
         this.paginateProducts();
       }
     },
@@ -474,27 +572,17 @@ export default {
 </script>
 
 <style>
-@media screen and (max-width: 1023px) {
-  
-  .login-bag-fav {
-    display: flex;
-    justify-content: space-between;
-    width: 15%;
-}.filter_sort{
-    display: none;
-  }
-  .mobile_view {
-    display: none;
-  }
-  .navbar {
-    justify-content: right;
-  }
-  .top {
-    display: none;
-  }
-  .hide_button {
-    display: none;
-  }
+.trans-sort-container{
+  display: none;
+}
+.laptop_view{
+  display: none;
+}
+.tab_filters{
+  display: none;
+}
+.mobile_view_filters{
+  display: none;
 }
 .card_heart {
   height: 16px;
@@ -502,7 +590,6 @@ export default {
 }
 .card_img {
   width: 90%;
-  height: 387px;
   border: 0;
 }
 .shopping_bag {
@@ -731,11 +818,13 @@ ul {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  padding-left: 25px;
+
   justify-content: space-around;
 }
 .col-9 {
   width: 78%;
-  padding-left: 20px;
+  padding-left: 25px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
@@ -773,9 +862,9 @@ ul {
 }
 .line {
   border: 1px solid #3030301a;
-  width: 97%;
+  width: 94%;
   text-align: center;
-  margin-left: 16px;
+  margin-left: 2%;
 }
 select {
   border: 0;
@@ -818,6 +907,8 @@ a {
   opacity: 70%;
 }
 .filter_sort {
+  display: block;
+
   width: 100%;
   height: 50px;
   border: 5px;
@@ -848,7 +939,7 @@ a {
   font-size: 16px;
   font-family: jost-medium;
   display: flex;
-  width: 278px;
+  width: 90%;
   font-weight: bold;
 }
 .price {
@@ -858,4 +949,171 @@ a {
   margin-top: 8px;
   font-weight: bold;
 }
+@media screen and (max-width: 1023px) {
+  .side_menu{
+    width: 16%;
+  }
+  .trans-sort-container{
+    display: contents
+    
+  }
+  .sorting_list h3{
+    text-align: center;
+  }
+  .sorting_list button{
+    border: 0;
+    background-color: #fff;
+
+  }
+  .sorting-value{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    opacity: 1;
+    background-color: rgba(0,0,0,.5);
+    top: 0;
+    z-index: 2;
+  }
+  .sorting_list{
+    position: fixed;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    z-index: 999;
+    background-color: #fff;
+    top: auto;
+    padding: 0;
+    bottom: 51px;
+    text-align: left;
+  }
+  .tab_filters{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    bottom: 0;
+    z-index: 14;
+    background: #ffff;
+  }
+  .action-button {
+    padding: 8px 12px;
+    display: flex;
+    column-gap: 15px;
+    border: none;
+    background-color: #fff;
+    color: #000;
+    font-size: 14px;
+    align-items: center;
+    font-weight: 600;
+  }
+  .tab_filters div{
+    padding: 8px 4px;
+    width: 50%;
+    border: 1px solid #ccc;
+display: flex;
+  }
+ .action-image {
+  width: 15px;
+  height: 15px;
+ }
+  .footer_subscribe input{
+    width: 168px;
+}
+hr {
+    width: 60%;
+}
+ .footer_box{
+  width: 100%;
+ } 
+ .footer_subscribe{
+  width: 100%;
+ }
+ hr{
+  width: 40%;
+ }
+ #line-footer {
+    width: 41%;}
+ .footer{
+  flex-direction: column;
+ }
+  .col-3{
+    display: none;
+  }
+  .col-9{
+    width: 100%;
+  }
+  .logo_tablet{
+    width: 45%;
+  }
+  .laptop_view{
+    display: block;
+    width: 20%;  }
+  .login-bag-fav {
+    display: flex;
+    justify-content: space-between;
+    width: 15%;
+    margin-right: 5%;
+}.filter_sort{
+    display: none;
+  }
+  .mobile_view {
+    display: none;
+  }
+  .navbar {
+    justify-content: space-between;
+  }
+  .toggle_navbar{
+    display: flex;
+    margin-left: 5%;
+    justify-content: space-between;
+}
+  /* .top {
+    display: none;
+  } */
+  .hide_button {
+    display: none;
+  }
+}
+@media screen and (max-width: 767px){
+  .top{
+    display: none;
+  }
+  .top_line{
+    display: none;
+  }
+  .card{
+    width: 33%;
+  }
+}
+@media screen and (max-width: 426px){
+  .card{
+    width: 50%;
+  }
+  .footer-logo{
+    display: none
+  }
+  .footer-logo-img{
+    width: 84px;
+  }
+  #line-footer{
+    width: 28%;
+  }
+  .side_menu {
+    width: 30%;
+}
+.logo_tablet {
+    width: 71%;
+    margin-left: 30px;
+}
+.login-bag-fav {
+  width: 24%;
+  margin-right: 8%;
+
+}
+.toggle_navbar{
+  width: 25%;
+}
+}
+
 </style>
